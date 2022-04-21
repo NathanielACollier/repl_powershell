@@ -20,9 +20,24 @@ function run-qwinsta(){
     }
 }
 
+function parse-qwinstaOutput(){
+    param(
+        [string]
+        $outputText
+    )
+
+    $lines = $outputText.Split("`n")
+
+    # first line is header so skip it, then the columns are tab delimited
+    $lines | select -Skip 1 | foreach{
+        $columns = $_.Split(" ") | where { -not [string]::IsNullOrWhiteSpace($_)} | foreach{ $_.Trim() }
+
+    }
+}
+
 function get-ActiveConsole(){
     $results = run-qwinsta
-    
+    $entries = parse-qwinstaOutput $results.stdout
 }
 
 get-ActiveConsole
